@@ -1,10 +1,11 @@
-FROM ubuntu:12.04
+FROM ubuntu:14.04
 MAINTAINER Aaron Huslage <aaron.huslage@docker.com>
 
-ENV VERSION 0.0.1
+RUN apt-get update && apt-get install -y apache2 supervisor
+ADD bin/consul-v0.1.0 /usr/local/bin/consul
+ADD config/consul.d-web.json /etc/consul.d/web.json
+ADD config/supervisor.d-supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+ADD html/index.html /var/www/inmdex.html
 
-RUN apt-get update && apt-get install -y apache2
-ADD index.html /var/www/index.html
-RUN exit 1
-
-CMD /usr/sbin/apache2ctl -D FOREGROUND
+EXPOSE 80
+CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisor.conf"]
